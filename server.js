@@ -59,7 +59,7 @@ function sendEmail(email, name) {
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   }
-
+  main().then(res.send('email sent!'))
   main().catch(console.error);
 }
 
