@@ -40,9 +40,9 @@ function sendEmail(email, name) {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '"StudyParty Test" <allendcooper@gmail.com>', // sender address
+      from: '"StudyParty" <info@mystudyparty.com>', // sender address
       to: email, // list of receivers
-      subject: "Welcome to StudyParty!", // Subject line
+      subject: "Test: Welcome to StudyParty!", // Subject line
       text: "Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner within the next 48 hours. If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule. Cheers, Team StudyParty ", // plain text body
       attachments: [{
         filename: 'StudyParty_logo_transparent_sm.png',
