@@ -58,8 +58,8 @@ function sendEmail(email, name) {
     // Preview only available when sending through an Ethereal account
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    res.send('email sent!')
   }
-  main().then(res.send('email sent!'))
   main().catch(console.error);
 }
 
