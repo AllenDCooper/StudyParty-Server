@@ -56,11 +56,12 @@ function sendEmail(email, name) {
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
     // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-    res.send('email sent!')
   }
-  main().catch(console.error);
+  main()
+  .then(res.send('email sent!'))
+  .catch(error => {res.send(error); console.error});
 }
 
 // API calls
@@ -72,6 +73,7 @@ app.post('/api/signup', (req, res, next) => {
   // console.log(req);
   console.log(req.body.email);
   sendEmail(req.body.email, req.body.name)
+  res.send('email sent')
 });
 
 // Start the API server
