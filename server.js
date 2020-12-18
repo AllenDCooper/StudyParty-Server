@@ -20,9 +20,9 @@ if (process.env.NODE_ENV === "production") {
 // app.use(routes);
 
 // nodemailer
-function sendEmail(email, name) {
+// function sendEmail(email, name) {
   // async..await is not allowed in global scope, must use a wrapper
-  async function main() {
+  async function main(email, name) {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
     // let testAccount = await nodemailer.createTestAccount();
@@ -52,13 +52,14 @@ function sendEmail(email, name) {
       html: initialEmail(name), // html body
     });
 
-    console.log("Message sent: %s", info.messageId);
+    // console.log("Message sent: %s", info.messageId);
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
     // Preview only available when sending through an Ethereal account
     // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-  }
+  // }
+//   main()
 }
 
 // API calls
@@ -69,7 +70,8 @@ app.get('/api/signup', (req, res) => {
 app.post('/api/signup', (req, res, next) => {
   // console.log(req);
   console.log(req.body.email);
-  sendEmail(req.body.email, req.body.name)
+  // sendEmail(req.body.email, req.body.name)
+  main(req.body.email, req.body.name)
   .then(res.send('email sent!'))
   .catch(error => {res.send(error); console.error});
 });
