@@ -53,9 +53,9 @@ if (process.env.NODE_ENV === "production") {
     }, 
     (error, info) => {
       if (error) {
-        return res.send(error)
+        return res.json({msg: error})
       }
-      return res.send('email sent')
+      return res.send({msg: 'email sent'})
     }
     );
 
