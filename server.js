@@ -21,52 +21,52 @@ if (process.env.NODE_ENV === "production") {
 
 // nodemailer
 // function sendEmail(email, name) {
-  // async..await is not allowed in global scope, must use a wrapper
-  async function main(email, name) {
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    // let testAccount = await nodemailer.createTestAccount();
+// async..await is not allowed in global scope, must use a wrapper
+async function main(email, name) {
+  // Generate test SMTP service account from ethereal.email
+  // Only needed if you don't have a real mail account for testing
+  // let testAccount = await nodemailer.createTestAccount();
 
-    // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAILUSER,
-        pass: process.env.EMAILPASSWORD,
-      },
-    });
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAILUSER,
+      pass: process.env.EMAILPASSWORD,
+    },
+  });
 
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-      from: '"StudyParty" <info@mystudyparty.com>', // sender address
-      to: email, // list of receivers
-      subject: "Test: Welcome to StudyParty!", // Subject line
-      text: "Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner within the next 48 hours. If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule. Cheers, Team StudyParty ", // plain text body
-      attachments: [{
-        filename: 'StudyParty_logo_transparent_sm.png',
-        path: __dirname + '/images/StudyParty_logo_transparent_sm.png',
-        cid: 'StudyParty_logo_transparent_sm.png'
-      }],
-      html: initialEmail(name), // html body
-    }, 
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"StudyParty" <info@mystudyparty.com>', // sender address
+    to: email, // list of receivers
+    subject: "Test: Welcome to StudyParty!", // Subject line
+    text: "Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner within the next 48 hours. If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule. Cheers, Team StudyParty ", // plain text body
+    attachments: [{
+      filename: 'StudyParty_logo_transparent_sm.png',
+      path: __dirname + '/images/StudyParty_logo_transparent_sm.png',
+      cid: 'StudyParty_logo_transparent_sm.png'
+    }],
+    html: initialEmail(name), // html body
+  },
     (error, info) => {
       if (error) {
-        return res.json({msg: error})
+        return { msg: error }
       }
-      return res.send({msg: 'email sent'})
+      return { msg: info }
     }
-    );
+  );
 
-    // console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+  // console.log("Message sent: %s", info.messageId);
+  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
-    // Preview only available when sending through an Ethereal account
-    // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  // Preview only available when sending through an Ethereal account
+  // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   // }
-//   main()
+  //   main()
 }
 
 // API calls
@@ -78,7 +78,7 @@ app.post('/api/signup', (req, res, next) => {
   // console.log(req);
   console.log(req.body.email);
   // sendEmail(req.body.email, req.body.name)
-  main(req.body.email, req.body.name)
+  res.json(main(req.body.email, req.body.name))
 });
 
 // Start the API server
