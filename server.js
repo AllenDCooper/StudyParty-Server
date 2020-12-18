@@ -50,7 +50,14 @@ if (process.env.NODE_ENV === "production") {
         cid: 'StudyParty_logo_transparent_sm.png'
       }],
       html: initialEmail(name), // html body
-    });
+    }, 
+    (error, info) => {
+      if (error) {
+        return res.send(error)
+      }
+      return res.send('email sent')
+    }
+    );
 
     // console.log("Message sent: %s", info.messageId);
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
@@ -72,8 +79,6 @@ app.post('/api/signup', (req, res, next) => {
   console.log(req.body.email);
   // sendEmail(req.body.email, req.body.name)
   main(req.body.email, req.body.name)
-  .then(res.send('email sent!'))
-  .catch(error => {res.send(error); console.error});
 });
 
 // Start the API server
