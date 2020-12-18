@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
 // nodemailer
 // function sendEmail(email, name) {
 // async..await is not allowed in global scope, must use a wrapper
-async function main(email, name) {
+async function main(email, name, response) {
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
   // let testAccount = await nodemailer.createTestAccount();
@@ -53,9 +53,9 @@ async function main(email, name) {
   },
     (error, info) => {
       if (error) {
-        return { msg: "error" }
+        return response.status(500).json({ error: 'message' })
       }
-      return { msg: "email sent!" }
+      return response.json({ user: 'tobi' })
     }
   );
 
@@ -78,7 +78,7 @@ app.post('/api/signup', (req, res, next) => {
   // console.log(req);
   console.log(req.body.email);
   // sendEmail(req.body.email, req.body.name)
-  res.json(main(req.body.email, req.body.name))
+  main(req.body.email, req.body.name, res)
 });
 
 // Start the API server
