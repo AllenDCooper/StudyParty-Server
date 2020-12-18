@@ -53,9 +53,9 @@ async function main(email, name) {
   },
     (error, info) => {
       if (error) {
-        return { msg: error }
+        return { msg: "error" }
       }
-      return { msg: info }
+      return { msg: "email sent!" }
     }
   );
 
