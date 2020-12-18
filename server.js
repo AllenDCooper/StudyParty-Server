@@ -55,7 +55,7 @@ async function main(email, name, response) {
       if (error) {
         return response.status(500).json({ error: 'message' })
       }
-      return response.json({ user: 'tobi' })
+      return response.json({ message: 'email sent' })
     }
   );
 
