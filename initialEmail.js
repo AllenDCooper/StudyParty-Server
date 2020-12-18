@@ -1,5 +1,4 @@
-const initialEmail = (name) => {
-  return (`
+const initialEmail = name => `
     <div class="">
       <div class="aHl"></div>
       <div id=":2f5" tabindex="-1"></div>
@@ -43,8 +42,6 @@ const initialEmail = (name) => {
       </div>
       <div class="hi">
       </div>
-    </div>`
-  )
-}
+    </div>`;
 
 module.exports = initialEmail;

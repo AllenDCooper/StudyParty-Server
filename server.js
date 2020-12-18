@@ -1,20 +1,21 @@
-const express = require("express");
-var cors = require('cors');
+const express = require('express');
+const cors = require('cors');
+
 const app = express();
-const nodemailer = require("nodemailer");
-const mongoose = require("mongoose");
+const nodemailer = require('nodemailer');
 // const routes = require("./routes");
 const PORT = process.env.PORT || 3001;
-const initialEmail = require('./initialEmail.js')
-require("dotenv").config();
+const initialEmail = require('./initialEmail.js');
+const { appendDB } = require('./db');
+require('dotenv').config();
 
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 // Serve up static assets (usually on heroku)
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
 }
 // Add routes, both API and view
 // app.use(routes);
@@ -28,8 +29,8 @@ async function main(email, name, response) {
   // let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
@@ -39,23 +40,27 @@ async function main(email, name, response) {
   });
 
   // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: '"StudyParty" <info@mystudyparty.com>', // sender address
-    to: email, // list of receivers
-    subject: "Test: Welcome to StudyParty!", // Subject line
-    text: "Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner within the next 48 hours. If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule. Cheers, Team StudyParty ", // plain text body
-    attachments: [{
-      filename: 'StudyParty_logo_transparent_sm.png',
-      path: __dirname + '/images/StudyParty_logo_transparent_sm.png',
-      cid: 'StudyParty_logo_transparent_sm.png'
-    }],
-    html: initialEmail(name), // html body
-  },
-    (error, info) => {
+  const info = await transporter.sendMail(
+    {
+      from: '"StudyParty" <info@mystudyparty.com>', // sender address
+      to: email, // list of receivers
+      subject: 'Test: Welcome to StudyParty!', // Subject line
+      text:
+        "Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner within the next 48 hours. If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule. Cheers, Team StudyParty ", // plain text body
+      attachments: [
+        {
+          filename: 'StudyParty_logo_transparent_sm.png',
+          path: `${__dirname}/images/StudyParty_logo_transparent_sm.png`,
+          cid: 'StudyParty_logo_transparent_sm.png',
+        },
+      ],
+      html: initialEmail(name), // html body
+    },
+    error => {
       if (error) {
-        return response.status(500).json({ error: 'message' })
+        return response.status(500).json({ error: 'message' });
       }
-      return response.json({ message: 'email sent' })
+      return response.json({ message: 'email sent' });
     }
   );
 
@@ -76,12 +81,13 @@ app.get('/api/signup', (req, res) => {
 
 app.post('/api/signup', (req, res, next) => {
   // console.log(req);
-  console.log(req.body.email);
+  // console.log(req.body.email);
   // sendEmail(req.body.email, req.body.name)
-  main(req.body.email, req.body.name, res)
+  // main(req.body.email, req.body.name, res);
+  appendDB({ table: 'users', item: req.body });
 });
 
 // Start the API server
-app.listen(PORT, function () {
+app.listen(PORT, function() {
   console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
 });
