@@ -5,9 +5,11 @@ const nodemailer = require("nodemailer");
 const mongoose = require("mongoose");
 // const routes = require("./routes");
 const PORT = process.env.PORT || 3001;
-const initialEmail = require('./initialEmail.js')
-const initialEmail2 = require('./initialEmail2.js')
+const initialEmail = require('./views/initialEmail.js')
+const initialEmail2 = require('./views/initialEmail2.js')
 require("dotenv").config();
+const axios = require('axios');
+const path = require('path');
 
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
@@ -17,16 +19,9 @@ app.use(cors());
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
-// Add routes, both API and view
-// app.use(routes);
 
 // nodemailer
-// function sendEmail(email, name) {
-// async..await is not allowed in global scope, must use a wrapper
 async function main(email, name, response) {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  // let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -62,9 +57,6 @@ async function main(email, name, response) {
 }
 
 async function testMain(email, name, availabilityArr, response) {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  // let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -100,7 +92,7 @@ async function testMain(email, name, availabilityArr, response) {
   );
 }
 
-sendConfirmToGoogle = (email) => {
+sendConfirmToGoogle = (email, res) => {
   const url = 'https://script.google.com/macros/s/AKfycbwLo3NjXMqXtdoJlqTVBpvE9xd8u9u5QQUF2nkR-cJtjbCwtoCGkfy2/exec'
   axios.get(url, {
     params: {
@@ -109,17 +101,21 @@ sendConfirmToGoogle = (email) => {
     }
   })
     .then(function (response) {
-      setResponseRecieved(true);
       console.log("confirmation submitted");
-      console.log(response)
+      res.status(200).sendFile(path.join(__dirname + '/views/confirmation.html'));
     })
     .catch(function (error) {
-      setSubmitError(true);
       console.log(error)
+      res.status(500).send(path.join(__dirname + '/views/confirmationError.html'))
     })
 }
 
-// API calls
+// routes
+app.get('/images/StudyParty_logo_transparent_sm.png', (req, res) => {
+  res.sendFile(path.join(__dirname + '/images/StudyParty_logo_transparent_sm.png'));
+});
+
+// API routes
 app.get('/api/signup', (req, res) => {
   res.send({ express: 'Hello From Express' });
 });
@@ -140,11 +136,11 @@ app.post('/api/signupTest', (req, res, next) => {
 });
 
 app.post('/api/confirmTest', (req, res, next) => {
-  // console.log(req);
-  console.log(req.body.email);
+  console.log(req.query.email);
+  // console.log(req.body.email);
   console.log("confirmTest api hit")
   // sendEmail(req.body.email, req.body.name)
-  sendConfirmToGoogle(email);
+  sendConfirmToGoogle(req.query.email, res);
 });
 
 // Start the API server
