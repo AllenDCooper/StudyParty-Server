@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // nodemailer
-async function main(email, name, response) {
+async function main(email, name, availabilityArr, response) {
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
