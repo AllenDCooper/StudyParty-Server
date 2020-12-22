@@ -3,8 +3,7 @@ const initialEmail = (name, availabilityArr, email) => {
   let availabilityStr = ""
   availabilityArr.forEach((time, index) => {
     let newDate = new Date(time.local.start)
-    let formattedDate = newDate.toUTCString()
-    availabilityStr += `<li>${formattedDate.slice(0, -3)} EST</li>`
+    availabilityStr += `<li>${newDate} EST</li>`
   })
 
   const styles = {
