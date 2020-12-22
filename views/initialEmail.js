@@ -2,7 +2,7 @@ const initialEmail = (name, availabilityArr, email) => {
   console.log(availabilityArr)
   let availabilityStr = ""
   availabilityArr.forEach((time, index) => {
-    let newDate = new Date(time.timeClicked.start)
+    let newDate = new Date(time.local.start)
     let formattedDate = newDate.toUTCString()
     availabilityStr += `<li>${formattedDate.slice(0, -3)} EST</li>`
   })

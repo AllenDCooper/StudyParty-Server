@@ -85,7 +85,7 @@ app.get('/api/signup', (req, res) => {
 });
 
 app.post('/api/signup', (req, res, next) => {
-  // console.log(req);
+  console.log(req.body);
   console.log(req.body.email);
   console.log(req.body.availabilityArr)
   // sendEmail(req.body.email, req.body.name)
