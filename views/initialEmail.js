@@ -2,7 +2,7 @@ const initialEmail = (name, availabilityArr, email) => {
   console.log(availabilityArr)
   let availabilityStr = ""
   availabilityArr.forEach((time, index) => {
-    availabilityStr += `<li>${time.local.start} EST</li>`
+    availabilityStr += `<li>${time.local.start}</li>`
   })
 
   const styles = {
