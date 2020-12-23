@@ -80,11 +80,10 @@ app.get('/api/signup', (req, res) => {
 });
 
 app.post('/api/signup', (req, res, next) => {
-  // console.log(req);
-  // console.log(req.body.email);
   // sendEmail(req.body.email, req.body.name)
   // main(req.body.email, req.body.name, res);
   appendDB({ table: 'users', item: req.body });
+  res.sendStatus(200);
 });
 
 // Start the API server
