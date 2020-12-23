@@ -1,7 +1,8 @@
 const express = require("express");
-var cors = require('cors');
+const cors = require('cors');
 const app = express();
 const nodemailer = require("nodemailer");
+const { DateTime } = require("luxon");
 const mongoose = require("mongoose");
 // const routes = require("./routes");
 const PORT = process.env.PORT || 3001;
@@ -19,8 +20,37 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
 
+const formatAvailabilityArr = (availabilityArr, timeZoneLocation) => {
+  // [{dayName: 1, dayArr: []}, {dayName: 2, dayArr:[]} ]
+  console.log(timeZoneLocation)
+  formattedAvailabilityArr = []
+  let currentDayNum = 0
+  let dayIndex = -1
+  availabilityArr.forEach((timeSlot, index) => {
+    let newTime = DateTime.fromMillis(parseInt(timeSlot), { zone: timeZoneLocation });
+    console.log(`newTime: ${newTime}`);
+    console.log(`newTime.day: ${newTime.day}`);
+    console.log(`currentDayNum: ${currentDayNum}`);
+    if (newTime.day > currentDayNum) {
+      currentDayNum = newTime.day;
+      dayIndex++
+      let currentDay = newTime.toFormat('ccc LLL d y')
+      let newTimeSlot = newTime.toFormat('T')
+      let newDayObj = {dayName: currentDay, dayArr: [newTimeSlot]}
+      formattedAvailabilityArr.push(newDayObj)
+    } else {
+      let newTimeSlot = newTime.toFormat('T')
+      console.log(formattedAvailabilityArr);
+      console.log(`dayIndex: ${dayIndex}`);
+      console.log(formattedAvailabilityArr[dayIndex]);
+      formattedAvailabilityArr[dayIndex].dayArr.push(newTimeSlot)
+    }
+  })
+  return (formattedAvailabilityArr)
+}
+
 // nodemailer
-async function main(email, name, availabilityArr, response) {
+async function main(email, name, availabilityArr, timeZone, response) {
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -44,7 +74,7 @@ async function main(email, name, availabilityArr, response) {
       path: __dirname + '/images/StudyParty_logo_transparent_sm.png',
       cid: 'StudyParty_logo_transparent_sm.png'
     }],
-    html: initialEmail(name, availabilityArr, email), // html body
+    html: initialEmail(name, availabilityArr, email, timeZone), // html body
   },
     (error, info) => {
       if (error) {
@@ -87,9 +117,13 @@ app.get('/api/signup', (req, res) => {
 app.post('/api/signup', (req, res, next) => {
   console.log(req.body);
   console.log(req.body.email);
-  console.log(req.body.availabilityArr)
+  console.log(req.body.availabilityArr);
+  console.log(req.body.timeZone);
+  console.log(req.body.timeZoneLocation);
+  console.log(req.body.timeZoneOffset);
   // sendEmail(req.body.email, req.body.name)
-  main(req.body.email, req.body.name, req.body.availabilityArr, res)
+  const formattedAvailabilityArr = formatAvailabilityArr(req.body.availabilityArr, req.body.timeZoneLocation)
+  main(req.body.email, req.body.name, formattedAvailabilityArr, req.body.timeZone, res)
 });
 
 app.post('/api/confirm', (req, res, next) => {

@@ -1,15 +1,28 @@
-const initialEmail = (name, availabilityArr, email) => {
-  console.log(availabilityArr)
-  let availabilityStr = ""
-  availabilityArr.forEach((time, index) => {
-    availabilityStr += `<li>${time.local.start}</li>`
-  })
+const initialEmail = (name, availabilityArr, email, timeZone) => {
+
+  console.log(`email log-availabilityArr: ${availabilityArr}`)
 
   const styles = {
-    button: "display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; color: #fff; background-color: #007bff; border-color: #007bff;"
+    button: "display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; color: #fff; background-color: #007bff; border-color: #007bff;",
+    dayName: "font-weight: bold"
   }
 
   const buttonClickLink = `https://studyparty-server.herokuapp.com/api/confirm?email=${email}`
+
+  let availabilityStr = ""
+  availabilityArr.forEach((day, index) => {
+    let dayString=`<li><span style="font-weight: bold">${day.dayName}</span>: `
+    let timeSlotStr = ""
+    day.dayArr.forEach((timeSlot, index) => {
+      timeSlotStr += `<span>`
+      if (index > 0) {
+        timeSlotStr += `, `
+      }
+      timeSlotStr += `${timeSlot}</span>`
+    })
+    dayString += `${timeSlotStr} <span class="timezone"> ${timeZone}<span></li>`
+    availabilityStr += dayString
+  })
 
   return (`
     <div class="text-align: center; margin: 0 auto">
@@ -43,7 +56,7 @@ const initialEmail = (name, availabilityArr, email) => {
                 </ul>
                 </div>
                 <div style="text-align: center">
-                  <form action=${buttonClickLink} method="POST"><button style="display: inline-block; margin: 10px auto; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; color: #fff; background-color: #007bff; border-color: #007bff;">Confirm</button></form>
+                  <form action=${buttonClickLink} method="POST"><button style="display: inline-block; margin: 10px auto; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; line-height: 2; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; color: #fff; background-color: #007bff; border-color: #007bff; width: 200px;">CONFIRM</button></form>
                 </div>
                 <p>If you need to update your availability in the interim, please respond to this email and let us know what time slots work (or don't work) with your schedule.</p>
               </div>
