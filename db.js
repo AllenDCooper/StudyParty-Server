@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
+const { getTimeZone, formatDateArr } = require('./time');
 
 const uri = process.env.MONGO_URI;
 const dbName = process.env.DB_NAME;
@@ -42,6 +43,32 @@ const appendDB = options => {
   }
 };
 
-// appendDB({ table: 'users', item: { foo: 'bar' } });
-
+const sendUserToDb = data => {
+  appendDB({
+    table: 'users',
+    item: {
+      submitted: getTimeZone('currentMoment'),
+      email: data.email,
+      name: data.name,
+      testDateMonth: data.testDate.getMonth() + 1,
+      testDateYear: data.testDate.getFullYear(),
+      availabilityEST: JSON.stringify(
+        formatDateArr(data.availability, 'newYork')
+      ),
+      availabilityLocal: JSON.stringify(
+        formatDateArr(data.availability, 'local')
+      ),
+      availabilityTime: JSON.stringify(
+        formatDateArr(data.availability, 'time')
+      ),
+      testPrep: data.testPrep,
+      groupSize: data.studyGroup,
+      targetScore: data.targetScore,
+      targetSection: data.targetSection,
+      timeZone: getTimeZone('timeZoneName'),
+      timeZoneLocation: getTimeZone('timeZoneLocation'),
+      timeZoneOffset: getTimeZone('timeZoneOffset'),
+    },
+  });
+};
 module.exports = { appendDB };
