@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
+const path = require('path');
 require('dotenv').config();
-const { getTimeZone, formatDateArr } = require('./time');
+const { formatDateArr } = require('./time');
 
 const uri = process.env.MONGO_URI;
 const dbName = process.env.DB_NAME;
@@ -34,6 +35,17 @@ const insertDocument = (db, options = {}) => {
     console.log(e);
   }
 };
+const updateOne = (db, options = {}) => {
+  const collection = db.collection(options.table);
+  try {
+    collection.updateOne(
+      { email: options.email },
+      { $set: { confirmed: true } }
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 const appendDB = options => {
   if (options.table && options.item) {
@@ -44,20 +56,15 @@ const appendDB = options => {
 };
 
 const sendUserToDb = data => {
+  const testDate = new Date(data.testDate);
   appendDB({
     table: 'users',
     item: {
-      submitted: getTimeZone('currentMoment'),
+      submitted: new Date().toString(),
       email: data.email,
       name: data.name,
-      testDateMonth: data.testDate.getMonth() + 1,
-      testDateYear: data.testDate.getFullYear(),
-      availabilityEST: JSON.stringify(
-        formatDateArr(data.availability, 'newYork')
-      ),
-      availabilityLocal: JSON.stringify(
-        formatDateArr(data.availability, 'local')
-      ),
+      testDateMonth: testDate.getMonth() + 1,
+      testDateYear: testDate.getFullYear(),
       availabilityTime: JSON.stringify(
         formatDateArr(data.availability, 'time')
       ),
@@ -65,10 +72,32 @@ const sendUserToDb = data => {
       groupSize: data.studyGroup,
       targetScore: data.targetScore,
       targetSection: data.targetSection,
-      timeZone: getTimeZone('timeZoneName'),
-      timeZoneLocation: getTimeZone('timeZoneLocation'),
-      timeZoneOffset: getTimeZone('timeZoneOffset'),
+      timeZone: data.timeZone,
+      timeZoneLocation: data.timeZoneLocation,
+      timeZoneOffset: data.timeZoneOffset,
+      confirmed: false,
     },
   });
 };
-module.exports = { appendDB };
+
+const sendConfirmToDb = (email, res) => {
+  dbConnect(updateOne, {
+    table: 'users',
+    email,
+    change: { confirmed: true },
+  })
+    .then(function(response) {
+      console.log('confirmation submitted');
+      res
+        .status(200)
+        .sendFile(path.join(`${__dirname}/views/confirmation.html`));
+    })
+    .catch(function(error) {
+      console.log(error);
+      res
+        .status(500)
+        .send(path.join(`${__dirname}/views/confirmationError.html`));
+    });
+};
+
+module.exports = { sendUserToDb, sendConfirmToDb };

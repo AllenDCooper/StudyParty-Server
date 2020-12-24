@@ -1,23 +1,20 @@
 const axios = require('axios');
 const path = require('path');
-const { formatDateArr, getTimeZone } = require('./time');
+const { formatDateArr } = require('./time');
 
 // Sends data to populate Google Sheet
 const sendToGoogleSheets = data => {
-  // console.log(valueArr)
-  // props.setShow(props.show + 1);
-  // const [testDate, groupSize, testPrep, targetScore, targetSection, availability, nameAndEmail] = valueArr
-
-  const url = process.env.GOOGLE_SHEETS;
+  const testDate = new Date(data.testDate);
+  const url = process.env.GOOGLE_SHEETS_URL;
   return new Promise((resolve, reject) => {
     axios
       .get(url, {
         params: {
-          submitted: getTimeZone('currentMoment'),
+          submitted: new Date().toString(),
           email: data.email,
           name: data.name,
-          testDateMonth: data.testDate.getMonth() + 1,
-          testDateYear: data.testDate.getFullYear(),
+          testDateMonth: testDate.getMonth() + 1,
+          testDateYear: testDate.getFullYear(),
           availabilityEST: JSON.stringify(
             formatDateArr(data.availability, 'newYork')
           ),
@@ -31,9 +28,9 @@ const sendToGoogleSheets = data => {
           groupSize: data.studyGroup,
           targetScore: data.targetScore,
           targetSection: data.targetSection,
-          timeZone: getTimeZone('timeZoneName'),
-          timeZoneLocation: getTimeZone('timeZoneLocation'),
-          timeZoneOffset: getTimeZone('timeZoneOffset'),
+          timeZone: data.timeZone,
+          timeZoneLocation: data.timeZoneLocation,
+          timeZoneOffset: data.timeZoneOffset,
         },
       })
       .then(function(response) {

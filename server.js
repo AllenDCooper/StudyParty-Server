@@ -22,7 +22,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // nodemailer
-async function sendInitEmail(email, name, timeZone, rawAvailArr,timeZoneLoc response) {
+async function sendInitEmail(
+  email,
+  name,
+  timeZone,
+  rawAvailArr,
+  timeZoneLoc,
+  response
+) {
   // create reusable transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -33,10 +40,7 @@ async function sendInitEmail(email, name, timeZone, rawAvailArr,timeZoneLoc resp
       pass: process.env.EMAILPASSWORD,
     },
   });
-  const availabilityArr = formatAvailabilityArr(
-    rawAvailArr,
-    timeZoneLoc
-  );
+  const availabilityArr = formatAvailabilityArr(rawAvailArr, timeZoneLoc);
   // send mail with defined transport object
   const info = await transporter.sendMail(
     {
@@ -59,7 +63,7 @@ async function sendInitEmail(email, name, timeZone, rawAvailArr,timeZoneLoc resp
         console.log(error);
         return response.status(500).json({ error });
       }
-      return response.json({ message: 'email sent' });
+      return response.status(200).json({ message: 'email sent' });
     }
   );
 } // routes
@@ -77,13 +81,15 @@ app.get('/api/signup', (req, res) => {
 app.post('/api/signup', (req, res) => {
   sendUserToDb(req.body);
   sendToGoogleSheets(req.body);
-  // sendInitEmail(
-  // req.body.email,
-  // req.body.name,
-  // req.body.timeZone,
-  // req.body.availabilityArr,
-  // req.body.timeZoneLocation,
-  // res);
+
+  sendInitEmail(
+    req.body.email,
+    req.body.name,
+    req.body.timeZone,
+    req.body.availability,
+    req.body.timeZoneLocation,
+    res
+  );
 });
 
 app.post('/api/confirm', (req, res, next) => {
@@ -92,6 +98,7 @@ app.post('/api/confirm', (req, res, next) => {
   console.log('confirm api hit');
   // sendEmail(req.body.email, req.body.name)
   sendConfirmToGoogle(req.query.email, res);
+  sendConfirmToDb(req.query.email, res);
 });
 
 // Start the API server

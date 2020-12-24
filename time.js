@@ -1,22 +1,5 @@
+/* eslint-disable camelcase */
 const { DateTime } = require('luxon');
-
-const getTimeZone = timeZoneType => {
-  const newDate = new Date();
-  switch (timeZoneType) {
-    case 'timeZoneName':
-      return newDate.toString().match(/\(([A-Za-z\s].*)\)/)[1];
-    case 'timeZoneOffset':
-      return newDate.getTimezoneOffset();
-    case 'timeZoneLocation':
-      return DateTime.fromMillis(newDate.getTime()).zoneName;
-    case 'currentMoment':
-      return DateTime.fromMillis(newDate.getTime(), {
-        zone: 'America/New_York',
-      }).toFormat('ccc MMM dd yyyy T ZZZZ');
-    default:
-      return null;
-  }
-};
 
 const formatDateArr = (availabilityArr, timeType) => {
   // put array in ascending order to make it easier to read
@@ -86,4 +69,4 @@ const formatAvailabilityArr = (availabilityArr, timeZoneLocation) => {
   return formattedAvailabilityArr;
 };
 
-module.exports = { getTimeZone, formatDateArr, formatAvailabilityArr };
+module.exports = { formatDateArr, formatAvailabilityArr };
