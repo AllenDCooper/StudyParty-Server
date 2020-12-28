@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3001;
 require('dotenv').config();
 const path = require('path');
 const initialEmail = require('./views/initialEmail.js');
-const { sendUserToDb } = require('./db');
+const { sendUserToDb, sendConfirmToDb } = require('./db');
 const { sendConfirmToGoogle, sendToGoogleSheets } = require('./google');
 const { formatAvailabilityArr } = require('./time');
 
@@ -97,8 +97,8 @@ app.post('/api/confirm', (req, res, next) => {
   // console.log(req.body.email);
   console.log('confirm api hit');
   // sendEmail(req.body.email, req.body.name)
+  sendConfirmToDb(req.query.email);
   sendConfirmToGoogle(req.query.email, res);
-  sendConfirmToDb(req.query.email, res);
 });
 
 // Start the API server
