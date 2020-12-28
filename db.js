@@ -80,12 +80,25 @@ const sendUserToDb = data => {
   });
 };
 
-const sendConfirmToDb = email => {
+const sendConfirmToDb = (email, res) => {
+  console.log(email);
   dbConnect(updateOne, {
     table: 'users',
     email,
     change: { confirmed: true },
-  });
+  })
+    .then(function(response) {
+      console.log('confirmation submitted');
+      res
+        .status(200)
+        .sendFile(path.join(`${__dirname}/views/confirmation.html`));
+    })
+    .catch(function(error) {
+      console.log(error);
+      res
+        .status(500)
+        .send(path.join(`${__dirname}/views/confirmationError.html`));
+    });
 };
 
 module.exports = { sendUserToDb, sendConfirmToDb };

@@ -43,27 +43,14 @@ const sendToGoogleSheets = data => {
   });
 };
 
-const sendConfirmToGoogle = (email, res) => {
+const sendConfirmToGoogle = email => {
   const url = process.env.GOOGLE_EMAIL_URL;
-  axios
-    .get(url, {
-      params: {
-        email,
-        confirm: true,
-      },
-    })
-    .then(function(response) {
-      console.log('confirmation submitted');
-      res
-        .status(200)
-        .sendFile(path.join(`${__dirname}/views/confirmation.html`));
-    })
-    .catch(function(error) {
-      console.log(error);
-      res
-        .status(500)
-        .send(path.join(`${__dirname}/views/confirmationError.html`));
-    });
+  axios.get(url, {
+    params: {
+      email,
+      confirm: true,
+    },
+  });
 };
 
 module.exports = { sendToGoogleSheets, sendConfirmToGoogle };

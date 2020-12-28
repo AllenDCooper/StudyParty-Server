@@ -93,12 +93,15 @@ app.post('/api/signup', (req, res) => {
 });
 
 app.post('/api/confirm', (req, res, next) => {
-  console.log(req.query.email);
-  // console.log(req.body.email);
   console.log('confirm api hit');
-  // sendEmail(req.body.email, req.body.name)
-  sendConfirmToDb(req.query.email);
-  sendConfirmToGoogle(req.query.email, res);
+  if (req.body.email) {
+    sendConfirmToGoogle(req.body.email);
+    sendConfirmToDb(req.body.email, res);
+  } else {
+    res
+      .status(500)
+      .send(path.join(`${__dirname}/views/confirmationError.html`));
+  }
 });
 
 // Start the API server
