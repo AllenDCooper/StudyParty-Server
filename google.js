@@ -10,7 +10,7 @@ const sendToGoogleSheets = data => {
     axios
       .get(url, {
         params: {
-          submitted: new Date().toString(),
+          submitted: formatDateArr(data.availability, 'current'),
           email: data.email,
           name: data.name,
           testDateMonth: testDate.getMonth() + 1,
@@ -19,7 +19,7 @@ const sendToGoogleSheets = data => {
             formatDateArr(data.availability, 'newYork')
           ),
           availabilityLocal: JSON.stringify(
-            formatDateArr(data.availability, 'local')
+            formatDateArr(data.availability, 'local', data.timeZoneLocation)
           ),
           availabilityTime: JSON.stringify(
             formatDateArr(data.availability, 'time')

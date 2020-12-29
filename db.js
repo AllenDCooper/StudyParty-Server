@@ -66,7 +66,7 @@ const sendUserToDb = data => {
       testDateMonth: testDate.getMonth() + 1,
       testDateYear: testDate.getFullYear(),
       availabilityTime: JSON.stringify(
-        formatDateArr(data.availability, 'time')
+        formatDateArr(data.availability, 'time', data.timeZoneLocation)
       ),
       testPrep: data.testPrep,
       groupSize: data.studyGroup,
