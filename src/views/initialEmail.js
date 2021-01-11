@@ -7,7 +7,7 @@ const initialEmail = (name, availabilityArr, email, timeZone) => {
     dayName: 'font-weight: bold',
   };
 
-  const buttonClickLink = `https://studyparty-server.herokuapp.com/api/confirm`;
+  const buttonClickLink = `http://localhost:3001/api/confirm`;
 
   let availabilityStr = '';
   availabilityArr.forEach((day, index) => {
