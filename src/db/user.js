@@ -6,7 +6,8 @@ const UserSchema = mongoose.Schema({
   name: String,
   testDateMonth: Number,
   testDateYear: Number,
-  availabilityTime: String,
+  availabilityTime: [Number],
+  testType: String,
   testPrep: String,
   groupSize: String,
   targetScore: String,
@@ -15,6 +16,7 @@ const UserSchema = mongoose.Schema({
   timeZoneLocation: String,
   timeZoneOffset: Number,
   confirmed: Boolean,
+  group: { type: mongoose.Types.ObjectId, ref: 'group', default: null },
 });
 
 const User = mongoose.model('user', UserSchema);
