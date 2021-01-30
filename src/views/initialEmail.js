@@ -46,7 +46,7 @@ const initialEmail = (name, availabilityArr, email, timeZone) => {
               </div>
               <div>
                 <p>Thanks for signing up! We're working on your request and hope to connect you with a GMAT study partner
-                within the next 48 hours.
+                within the next 48 hours. Once connected, you and your partner will have access to a calendar event and Zoom link for your session.
                 </p>
                 <p>Before we schedule your StudyParty, please first confirm your availability and click the confirm button below:
                 </p>

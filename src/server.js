@@ -97,7 +97,7 @@ app.post('/api/signup', (req, res) => {
     testDateMonth: testDate.getMonth() + 1,
     testDateYear: testDate.getFullYear(),
     availabilityTime: JSON.stringify(
-      formatDateArr(req.body.availability, 'time')
+      formatDateArr(req.body.availability, 'time', req.body.timeZoneLocation)
     ),
     testPrep: req.body.testPrep,
     groupSize: req.body.studyGroup,

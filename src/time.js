@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 const { DateTime } = require('luxon');
 
-const formatDateArr = (availabilityArr, timeType) => {
+const formatDateArr = (availabilityArr, timeType, timeZoneLocation) => {
   // put array in ascending order to make it easier to read
-  availabilityArr.sort(function(a, b) {
+  availabilityArr.sort(function (a, b) {
     return a - b;
   });
   // format time based on various format
@@ -25,7 +25,12 @@ const formatDateArr = (availabilityArr, timeType) => {
     case 'local':
       const availabilityArr_Local = [];
       availabilityArr.forEach((timeslot, index) => {
-        const newStart_Local = DateTime.fromMillis(parseInt(timeslot));
+        const newStart_Local = DateTime.fromMillis(
+          parseInt(timeslot),
+          {
+            zone: timeZoneLocation
+          }
+        );
         availabilityArr_Local.push(
           newStart_Local.toFormat('ccc MMM dd yyyy T ZZZZ')
         );
@@ -33,6 +38,9 @@ const formatDateArr = (availabilityArr, timeType) => {
       return availabilityArr_Local;
     case 'time':
       return availabilityArr;
+    case 'current':
+      const dt = DateTime.local().setZone("America/New_York")
+      return dt.toFormat('ccc MMM dd yyyy T ZZZZ');
     default:
       return null;
   }
