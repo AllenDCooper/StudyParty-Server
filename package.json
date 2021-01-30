@@ -23,6 +23,7 @@
     "luxon": "^1.25.0",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.11",
+    "node-cron": "^2.0.3",
     "nodemailer": "^6.4.17"
   }
 }

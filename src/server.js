@@ -7,18 +7,24 @@ const nodemailer = require('nodemailer');
 const PORT = process.env.PORT || 3001;
 require('dotenv').config();
 const path = require('path');
+const cron = require('node-cron');
 const initDb = require('./db/db');
 const User = require('./db/user');
 const initialEmail = require('./views/initialEmail.js');
 const { sendConfirmToGoogle, sendToGoogleSheets } = require('./google');
 const { formatDateArr, formatAvailabilityArr } = require('./time');
-
+const findMatches = require('./match');
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
 initDb();
+
+// runs findMatches every 12 hours
+cron.schedule('0 */12 * * *', function() {
+  findMatches();
+});
 
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === 'production') {
