@@ -1,5 +1,4 @@
 const axios = require('axios');
-const path = require('path');
 const { formatDateArr } = require('./time');
 
 // Sends data to populate Google Sheet

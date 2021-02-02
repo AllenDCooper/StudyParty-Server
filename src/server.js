@@ -7,15 +7,25 @@ const nodemailer = require('nodemailer');
 const PORT = process.env.PORT || 3001;
 require('dotenv').config();
 const path = require('path');
+const cron = require('node-cron');
+const initDb = require('./db/db');
+const User = require('./db/user');
 const initialEmail = require('./views/initialEmail.js');
-const { sendUserToDb, sendConfirmToDb } = require('./db');
 const { sendConfirmToGoogle, sendToGoogleSheets } = require('./google');
-const { formatAvailabilityArr } = require('./time');
-
+const { formatDateArr, formatAvailabilityArr } = require('./time');
+const findMatches = require('./match');
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+
+initDb();
+
+// runs findMatches every 12 hours
+cron.schedule('0 */12 * * *', function() {
+  findMatches();
+});
+
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
@@ -79,24 +89,49 @@ app.get('/api/signup', (req, res) => {
 });
 
 app.post('/api/signup', (req, res) => {
-  sendUserToDb(req.body);
-  sendToGoogleSheets(req.body);
-
-  sendInitEmail(
-    req.body.email,
-    req.body.name,
-    req.body.timeZone,
-    req.body.availability,
-    req.body.timeZoneLocation,
-    res
-  );
+  const testDate = new Date(req.body.testDate);
+  const user = new User({
+    submitted: new Date().toString(),
+    email: req.body.email,
+    name: req.body.name,
+    testDateMonth: testDate.getMonth() + 1,
+    testDateYear: testDate.getFullYear(),
+    availabilityTime: JSON.stringify(
+      formatDateArr(req.body.availability, 'time', req.body.timeZoneLocation)
+    ),
+    testPrep: req.body.testPrep,
+    groupSize: req.body.studyGroup,
+    targetScore: req.body.targetScore,
+    targetSection: req.body.targetSection,
+    timeZone: req.body.timeZone,
+    timeZoneLocation: req.body.timeZoneLocation,
+    timeZoneOffset: req.body.timeZoneOffset,
+    confirmed: false,
+  });
+  user.save().then(() => {
+    // sendToGoogleSheets(req.body);
+    sendInitEmail(
+      req.body.email,
+      req.body.name,
+      req.body.timeZone,
+      req.body.availability,
+      req.body.timeZoneLocation,
+      res
+    );
+  });
 });
 
 app.post('/api/confirm', (req, res, next) => {
   console.log('confirm api hit');
   if (req.body.email) {
-    sendConfirmToGoogle(req.body.email);
-    sendConfirmToDb(req.body.email, res);
+    // sendConfirmToGoogle(req.body.email);
+    User.findOneAndUpdate({ email: req.body.email }, { confirmed: true })
+      .then(() =>
+        res
+          .status(200)
+          .sendFile(path.join(`${__dirname}/views/confirmation.html`))
+      )
+      .catch(e => res.status(500).send({ message: e }));
   } else {
     res
       .status(500)

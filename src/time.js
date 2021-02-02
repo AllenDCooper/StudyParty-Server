@@ -48,7 +48,6 @@ const formatDateArr = (availabilityArr, timeType, timeZoneLocation) => {
 
 const formatAvailabilityArr = (availabilityArr, timeZoneLocation) => {
   // [{dayName: 1, dayArr: []}, {dayName: 2, dayArr:[]} ]
-  console.log(timeZoneLocation);
   const formattedAvailabilityArr = [];
   let currentDayNum = 0;
   let dayIndex = -1;
@@ -56,9 +55,6 @@ const formatAvailabilityArr = (availabilityArr, timeZoneLocation) => {
     const newTime = DateTime.fromMillis(parseInt(timeSlot), {
       zone: timeZoneLocation,
     });
-    console.log(`newTime: ${newTime}`);
-    console.log(`newTime.day: ${newTime.day}`);
-    console.log(`currentDayNum: ${currentDayNum}`);
     if (newTime.day > currentDayNum) {
       currentDayNum = newTime.day;
       dayIndex += 1;
@@ -68,9 +64,6 @@ const formatAvailabilityArr = (availabilityArr, timeZoneLocation) => {
       formattedAvailabilityArr.push(newDayObj);
     } else {
       const newTimeSlot = newTime.toFormat('T');
-      console.log(formattedAvailabilityArr);
-      console.log(`dayIndex: ${dayIndex}`);
-      console.log(formattedAvailabilityArr[dayIndex]);
       formattedAvailabilityArr[dayIndex].dayArr.push(newTimeSlot);
     }
   });
